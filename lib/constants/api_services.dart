@@ -5,6 +5,8 @@ class ApiServices{
 //    static const SOCKET_RECENT_ORDER_URL = "${BASEURL}recentorder";
 
    static const login = "${BASEURL}admin/login";  
+   
+   static const updateFcmtoken = "${BASEURL}admin/login/token";  
 
    static const getRestaurants = "${BASEURL}admin/restaurant/get";
    static const updateRestaurants = "${BASEURL}admin/restaurant/update";
@@ -119,5 +121,13 @@ static const searchrestaurants = "${BASEURL}admin/restaurant/search?search=";
 
   
   static const grocery_home_tags = "${BASEURL}admin/grocery/tag/home";
+
+
+  static const grocery_get_orders = "${BASEURL}admin/orders/grocery/orders";
   
+  static const grocery_get_order = "${BASEURL}admin/orders/grocery/orders/order/";
+  
+  static const grocery_accept_order = "${BASEURL}admin/orders/grocery/accept/";
+  static const grocery_cancel_order = "${BASEURL}delivery/orders/grocery/cancelorder";
+
    }

@@ -8,11 +8,13 @@ import 'package:admin/controller/DashboardController.dart';
 import 'package:admin/model/DashboardModel.dart';
 import 'package:admin/model/GroceryDashboardModel.dart';
 import 'package:admin/navigation/DrawerNavigation.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,16 +28,50 @@ class _HomeScreenState extends State<HomeScreen> {
 bool loading = false;
   
  final dashboardController dashboard = Get.put(dashboardController());
+ 
+ final TokenController tokencontroller = Get.put(TokenController());
 
   @override
 void initState(){
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
    getDataHandler("");
    getGroceryDataHandler("");
+    if(tokencontroller.isUpdated == false){
+    UpdateFcmTokenHandler();
+    }
     });
+
   super.initState();
 }
 
+
+Future<void> UpdateFcmTokenHandler() async{
+  try{
+ final uri = Uri.parse(ApiServices.updateFcmtoken);
+ print(uri);
+ String? token = await FirebaseMessaging.instance.getToken();
+final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final admin_id = await prefs.getInt("admin_id") ?? null;
+  if(admin_id == null) return;
+    final data = {
+      "id": admin_id,
+      "fcm_token": token
+    };
+
+    var jsonString = json.encode(data);
+    print(jsonString);
+     var header ={
+  'Content-type': 'application/json'
+ };
+    final response = await http.put(uri, body: jsonString, headers: header);
+    if(response.statusCode == 200){
+      tokencontroller.updateHandler();
+    }
+  }
+  catch(e){
+
+  }
+}
 
 Future<void> getDataHandler(String condition) async{
   loading = true;
@@ -103,6 +139,10 @@ print("${ApiServices.grocery_dashboard}&${condition}");
           onRefresh: () async{
            await getDataHandler("");
            await getGroceryDataHandler("");
+             if(tokencontroller.isUpdated == false){
+  await UpdateFcmTokenHandler();
+    }
+  
           },
            child: SingleChildScrollView(
             child: Column(

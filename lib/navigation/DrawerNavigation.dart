@@ -6,6 +6,7 @@ import 'package:admin/screen/CategoryScreen/CategoryScreen.dart';
 import 'package:admin/screen/DeliveryPersonsScreen/DeliveryPersonsScreen.dart';
 import 'package:admin/screen/GroceryBrandsScreen/GroceryBrandsScreen.dart';
 import 'package:admin/screen/GroceryCategoryScreen/GroceryCategoryScreen.dart';
+import 'package:admin/screen/GroceryOrdersScreen/GroceryOrdersScreen.dart';
 import 'package:admin/screen/GroceryProductsScreen/GroceryProductsScreen.dart';
 import 'package:admin/screen/GroceryTagScreen/GroceryTagScreen.dart';
 import 'package:admin/screen/GroceryTypesScreen/GroceryTypesScreen.dart';
@@ -321,6 +322,19 @@ return color;
                            HomeGroceryTagsScreen()),
                           );
                          controller.currentIndex(96);
+                      },
+                    ),
+
+                         ListTile(
+                      leading: Icon(Icons.delivery_dining, size: ScreenUtil().setSp(25), color: drawerColor(97),),
+                      title:  Text(' Orders', style: TextStyle(color: drawerColor(97), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
+                      onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => 
+                           GroceryOrdersScreen()),
+                          );
+                         controller.currentIndex(97);
                       },
                     ),
           

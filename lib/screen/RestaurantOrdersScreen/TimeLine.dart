@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:admin/constants/colors.dart';
 import 'package:admin/constants/font_family.dart';
+import 'package:admin/model/GroceryOrderModel.dart';
 import 'package:admin/model/OrderModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -56,6 +57,51 @@ class _TimeLineState extends State<TimeLine> {
   }
 }
 
+class GroceryTimeLine extends StatefulWidget {
+  final GroceryOrderModel order;
+  const GroceryTimeLine({super.key, required this.order});
+
+  @override
+  State<GroceryTimeLine> createState() => _GroceryTimeLineState();
+}
+
+class _GroceryTimeLineState extends State<GroceryTimeLine> {
+  @override
+  Widget build(BuildContext context) {
+      return  Center(
+         
+        child: ListView.builder(
+         physics: NeverScrollableScrollPhysics(),
+          itemCount: widget?.order?.orderStatus?.length  ?? 0,
+          shrinkWrap: true,
+         itemBuilder: ((context, index) {
+         
+           return TimelineTile(
+              alignment: TimelineAlign.manual,
+              lineXY: 0.1,
+              isFirst: index == 0 ? true : false,
+              isLast: ((widget?.order?.orderStatus?.length ?? 0) - 1) == index ? true : false,
+              indicatorStyle:  IndicatorStyle(
+                width: 20,
+                color: (widget?.order?.orderStatus?[index]?.statusId ?? 1)  <= (widget?.order?.status ?? 1) ? AppColors.primaryColor : AppColors.lightgreycolor,
+                padding: EdgeInsets.all(6),
+              ),
+              endChild:  _RightChild(
+                current_status:widget?.order?.status,
+               title: "${widget?.order?.orderStatus?[index]?.status ?? ''}",
+                message: "${widget?.order?.orderStatus?[index]?.updatedAt ?? ''}",
+              ),
+              beforeLineStyle:  LineStyle(
+                color: (widget?.order?.orderStatus?[index]?.statusId ?? 1)  <= (widget?.order?.status ?? 1) ? AppColors.primaryColor : AppColors.lightgreycolor,
+              ),
+            );
+           
+
+         }),
+        ),
+    );
+  }
+}
 
 class _RightChild extends StatelessWidget {
   const _RightChild({

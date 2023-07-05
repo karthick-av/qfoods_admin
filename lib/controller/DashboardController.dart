@@ -13,3 +13,8 @@ addgData(GroceryDashboardModel? data) => gdashboard = data;
 
  
 }
+
+class TokenController extends GetxController{
+  bool isUpdated = false;
+  updateHandler() => isUpdated = true;
+}
