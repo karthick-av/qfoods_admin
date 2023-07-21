@@ -3,6 +3,7 @@ import 'package:admin/constants/font_family.dart';
 import 'package:admin/controller/DrawerController.dart';
 import 'package:admin/model/DashboardModel.dart';
 import 'package:admin/screen/CategoryScreen/CategoryScreen.dart';
+import 'package:admin/screen/CouponsScreen/CouponScreen.dart';
 import 'package:admin/screen/DeliveryPersonsScreen/DeliveryPersonsScreen.dart';
 import 'package:admin/screen/GroceryBrandsScreen/GroceryBrandsScreen.dart';
 import 'package:admin/screen/GroceryCategoryScreen/GroceryCategoryScreen.dart';
@@ -16,7 +17,7 @@ import 'package:admin/screen/HomeGroceryCategoryScreen/HomeGroceryCategoryScreen
 import 'package:admin/screen/HomeGroceryTagsScreen/HomeGroceryTagsScreen.dart';
 import 'package:admin/screen/OfficeLocationScreen/OfficeLocationScreen.dart';
 import 'package:admin/screen/ReportsScreen/ReportsScreen.dart';
-import 'package:admin/screen/RestaurantOrdersScreen/RestaurantOrdersScreen.dart';
+import 'package:admin/screen/RestaurantOrdersScreen/OrdersScreen.dart';
 import 'package:admin/screen/RestaurantScreen/RestaurantScreen.dart';
 import 'package:admin/screen/DeliveryChargesScreen/DeliveryChargesScreen.dart';
 import 'package:admin/screen/TopRestaurantsScreen/TopRestaurantScreen.dart';
@@ -53,6 +54,7 @@ return color;
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ListView(
+                  physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
                   children: [
@@ -113,7 +115,7 @@ return color;
                            Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => 
-                           RestaurantOrdersScreen()),
+                           RestauarantOrdersScreen()),
                           );
                          controller.currentIndex(5);
                       },
@@ -179,46 +181,6 @@ return color;
                       ),
                     ),
           
-          
-                      ListTile(
-                      leading: Icon(Icons.location_city, size: ScreenUtil().setSp(25), color: drawerColor(31),),
-                      title:  Text(' Office Location', style: TextStyle(color: drawerColor(31), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
-                      onTap: () {
-                           Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => 
-                           OfficeLocationScreen()),
-                          );
-                         controller.currentIndex(31);
-                      },
-                    ),
-          
-          
-                     ListTile(
-                      leading: Icon(Icons.delivery_dining, size: ScreenUtil().setSp(25), color: drawerColor(41),),
-                      title:  Text(' Delivery Charges', style: TextStyle(color: drawerColor(41), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
-                      onTap: () {
-                           Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => 
-                           DeliveryChargesScreen()),
-                          );
-                         controller.currentIndex(41);
-                      },
-                    ),
-          
-                     ListTile(
-                      leading: Icon(Icons.delivery_dining, size: ScreenUtil().setSp(25), color: drawerColor(51),),
-                      title:  Text(' Delivery Persons', style: TextStyle(color: drawerColor(51), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
-                      onTap: () {
-                           Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => 
-                           DeliveryPersonsScreen()),
-                          );
-                         controller.currentIndex(51);
-                      },
-                    ),
           
                       ListTile(
                       leading: Icon(Icons.dashboard, size: ScreenUtil().setSp(25), color: drawerColor(2),),
@@ -340,7 +302,59 @@ return color;
           
                         ]
                       )
-                      )
+                      ),
+                      ListTile(
+                      leading: Icon(Icons.location_city, size: ScreenUtil().setSp(25), color: drawerColor(31),),
+                      title:  Text(' Office Location', style: TextStyle(color: drawerColor(31), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
+                      onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => 
+                           OfficeLocationScreen()),
+                          );
+                         controller.currentIndex(31);
+                      },
+                    ),
+          
+            ListTile(
+                      leading: Icon(Icons.location_city, size: ScreenUtil().setSp(25), color: drawerColor(77),),
+                      title:  Text(' Coupons', style: TextStyle(color: drawerColor(77), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
+                      onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => 
+                           CouponScreen()),
+                          );
+                         controller.currentIndex(77);
+                      },
+                    ),
+          
+                     ListTile(
+                      leading: Icon(Icons.delivery_dining, size: ScreenUtil().setSp(25), color: drawerColor(41),),
+                      title:  Text(' Delivery Charges', style: TextStyle(color: drawerColor(41), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
+                      onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => 
+                           DeliveryChargesScreen()),
+                          );
+                         controller.currentIndex(41);
+                      },
+                    ),
+          
+                     ListTile(
+                      leading: Icon(Icons.delivery_dining, size: ScreenUtil().setSp(25), color: drawerColor(51),),
+                      title:  Text(' Delivery Persons', style: TextStyle(color: drawerColor(51), fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14)),),
+                      onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => 
+                           DeliveryPersonsScreen()),
+                          );
+                         controller.currentIndex(51);
+                      },
+                    ),
+          
                     
                   ]
                 ),

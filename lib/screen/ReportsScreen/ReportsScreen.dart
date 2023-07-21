@@ -15,6 +15,12 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class ReportsController extends GetxController{
+bool dishApiCalled = false;
+bool restaurantApiCalled = false;
+
+ dishCalled() => dishApiCalled = true;
+ restaurantCalled() => restaurantApiCalled = true;
+
  List<DishesReportsModel> dishesReports = [];
  List<RestaurantsReportsModel> restaurantsReports = [];
   addAllDishReports(List<DishesReportsModel> reports) => dishesReports = reports;
@@ -123,7 +129,7 @@ final ReportsController reportsController = Get.put(ReportsController());
 void initState(){
   super.initState();
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-   if((reportsController?.dishesReports?.length ?? 0) == 0){
+   if((reportsController?.dishesReports?.length ?? 0) == 0 && reportsController.dishApiCalled ==false){
       getReportsHandler("init", "");
   
    }
@@ -177,7 +183,9 @@ setState(() {
   });
 try{
        String url = "${ApiServices.dishes_reports}?page=${current_page}&per_page=${per_page}&${filter}";
+    print(url);
     var response = await http.get(Uri.parse(url));
+    reportsController.dishCalled();
 
           setState(() {
     ApiCallDone = false;
@@ -402,7 +410,7 @@ final ReportsController reportsController = Get.put(ReportsController());
 void initState(){
      
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    if((reportsController?.restaurantsReports?.length ?? 0) == 0){
+    if((reportsController?.restaurantsReports?.length ?? 0) == 0 && reportsController.restaurantApiCalled == false){
       getReportsHandler("init", "");
   
    }
@@ -457,7 +465,9 @@ setState(() {
   });
 try{
        String url = "${ApiServices.restaurant_reports}?page=${current_page}&per_page=${per_page}&${filter}";
+  print(url);
     var response = await http.get(Uri.parse(url));
+    reportsController.restaurantCalled();
       setState(() {
     ApiCallDone = false;
   });

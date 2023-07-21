@@ -46,6 +46,7 @@ static const deleteRestaurants = "${BASEURL}admin/restaurant/delete";
    static const get_categories = "${BASEURL}admin/category";
 
    static const get_orders = "${BASEURL}admin/orders/";
+   static const coupon = "${BASEURL}admin/coupon/";
 
    static const get_dashboard = "${BASEURL}admin/dashboard";
 

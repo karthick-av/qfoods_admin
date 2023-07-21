@@ -14,6 +14,7 @@ class SelectedCategoryProvider extends ChangeNotifier {
   notifyListeners();
   }
   addSelectedDishes(List<CategoryDishesModel> data){
+    print("SelectedDishes ${SelectedDishes?.length}");
   SelectedDishes = data;
   notifyListeners();
   }

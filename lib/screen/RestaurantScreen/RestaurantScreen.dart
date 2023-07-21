@@ -244,8 +244,9 @@ setState(() {});
                                       ],
                                     ),
                            child: TextField(
-                            onChanged: (String val) {
-                            if((val?.length ?? 0) > 2){
+                           
+                            onSubmitted: (String val){
+                              if((val?.length ?? 0) > 2){
                              
                              loading = true;
                               setState(() {     });

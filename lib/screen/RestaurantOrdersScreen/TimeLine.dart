@@ -103,6 +103,7 @@ class _GroceryTimeLineState extends State<GroceryTimeLine> {
   }
 }
 
+
 class _RightChild extends StatelessWidget {
   const _RightChild({
      super.key,
@@ -116,10 +117,11 @@ class _RightChild extends StatelessWidget {
   final String message;
   final bool disabled;
   final int? current_status;
-
+    
+   
   @override
   Widget build(BuildContext context) {
-     final parsedDate = message != "" ? DateTime.parse(message) : '';
+    final parsedDate = message != "" ? DateTime.parse(message) : '';
  String formatted = "";
  
   if(parsedDate != ""){
@@ -127,6 +129,7 @@ class _RightChild extends StatelessWidget {
     formatted =  parsedDate != "" ? formatter.format(parsedDate as DateTime) : '';
 
   }
+ 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -148,7 +151,7 @@ class _RightChild extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                formatted,
+                formatted ?? '',
                 style: TextStyle(
                    fontFamily: FONT_FAMILY,
                   color: disabled

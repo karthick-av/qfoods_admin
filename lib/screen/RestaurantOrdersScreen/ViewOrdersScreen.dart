@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:admin/Provider/OrdersProvider.dart';
 import 'package:admin/constants/api_services.dart';
 import 'package:admin/constants/colors.dart';
 import 'package:admin/constants/font_family.dart';
@@ -8,63 +9,79 @@ import 'package:admin/screen/RestaurantOrdersScreen/TimeLine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:http/http.dart' as http;
 
-class ViewOrderScreen extends StatefulWidget {
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+class ViewOrderScreen extends StatelessWidget {
   final OrderModel orderDetail;
   const ViewOrderScreen({super.key, required this.orderDetail});
 
   @override
-  State<ViewOrderScreen> createState() => _ViewOrderScreenState();
+  Widget build(BuildContext context) {
+    return ViewOrder(orderDetail: orderDetail);
+  }
 }
 
-class _ViewOrderScreenState extends State<ViewOrderScreen> {
+
+
+
+
+class ViewOrder extends StatefulWidget {
+  final OrderModel orderDetail;
+  const ViewOrder({super.key, required this.orderDetail});
+
+  @override
+  State<ViewOrder> createState() => _ViewOrderScreenState();
+}
+
+class _ViewOrderScreenState extends State<ViewOrder> {
   OrderModel? order;
-  bool? loading;
+  bool? loading = false;
+  bool bottombtnLoading = false;
+  bool statusloading = false;
   
   @override
   void initState(){
     order = widget.orderDetail;
- super.initState();
+super.initState();
   }
-  @override
-void dispose() {
- 
-  super.dispose();
-}
-  
 
 Future<void> getOrderHandler() async{
+   final orderProvider = Provider.of<OrdersProvider>(context, listen: false);
+ 
    setState(() {
     loading = true;
   });
   try{
-  print("fff");
  var response = await http.get(Uri.parse("${ApiServices.get_orders}${order?.orderId}"));
      setState(() {
     loading = false;
   });
     if(response.statusCode == 200){
        var response_body = json.decode(response.body);
-      OrderModel __order = OrderModel.fromJson(response_body);
-   
- if(__order?.orderId != null){
-    
+       OrderModel __order = OrderModel.fromJson(response_body);
+
        order = __order;
+    //   orderProvider.update(__order);
        setState(() {});
-       print(response_body);
-     }
     }
   }catch(e){
- print(e);
+ 
   }
 }
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
       double width = MediaQuery.of(context).size.width;
-  
+  double height = MediaQuery.of(context).size.height;
+  String current_status = order?.orderStatus?.firstWhere((element) => element?.statusId == order?.status)?.status ?? '';
     return Scaffold(
       backgroundColor: AppColors.whitecolor,
       body: SafeArea(
@@ -75,6 +92,9 @@ Future<void> getOrderHandler() async{
                  child: Row(
                    children: [
                      InkWell(
+                      onTap: (){
+                        Navigator.of(context).pop();
+                      },
                       child: Icon(Icons.arrow_back, color: AppColors.blackcolor, size: ScreenUtil().setSp(18),),
                       
                      ),
@@ -95,33 +115,7 @@ Future<void> getOrderHandler() async{
                   padding: const EdgeInsets.all(8),
                   child:  Column(
                       children: [
-                        
-                          Container(
-                                      margin: const EdgeInsets.only(top: 10),
-                                      width: double.infinity,
-                                      height: 1,
-                                      color: Color(0XFFe9e9eb),
-                                     ),
-                      
-                      SizedBox(height: 8,),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                             Column(
-                              children: [
-                                   Text("Order Id: ${order?.orderId ?? ''}", style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(15)),)
-                               
-                              ],
-                             ),
-                             Text("Total Rs ${order?.grandTotal ?? '0'}", style: TextStyle(color: AppColors.blackcolor, fontWeight: FontWeight.bold,fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(15)),)
-                             ],
-                            ),
-                          )  ,
-
-                     if(order?.isCancelled  == 1)
+                                             if(order?.isCancelled  == 1)
                       Container(
                         margin: const EdgeInsets.only(top: 10),
                     padding: const EdgeInsets.all(14.0),
@@ -152,11 +146,32 @@ Future<void> getOrderHandler() async{
 
                           
 
-                          if(order?.isCancelled == 0)
-                         Padding(
-                           padding: const EdgeInsets.all(8.0),
-                           child: TimeLine(order: order,),
-                         ),
+
+                          Container(
+                                      margin: const EdgeInsets.only(top: 10),
+                                      width: double.infinity,
+                                      height: 1,
+                                      color: Color(0XFFe9e9eb),
+                                     ),
+                      
+                      SizedBox(height: 8,),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                             Column(
+                              children: [
+                                   Text("Order Id: ${order?.orderId ?? ''}", style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(15)),)
+                               
+                              ],
+                             ),
+                             Text("Total Rs ${order?.grandTotal ?? '0'}", style: TextStyle(color: AppColors.blackcolor, fontWeight: FontWeight.bold,fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(15)),)
+                             ],
+                            ),
+                          )  ,
+                        
                          SizedBox(
                                 height: 5,
                               ),
@@ -251,7 +266,7 @@ Future<void> getOrderHandler() async{
                                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Delievery Address :-", style: TextStyle(color: AppColors.blackcolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14), fontWeight: FontWeight.bold),),
+                      Text("Delivery Address :-", style: TextStyle(color: AppColors.blackcolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14), fontWeight: FontWeight.bold),),
                       SizedBox(height: 3,),
                                Theme(
                              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -320,6 +335,8 @@ Future<void> getOrderHandler() async{
                                  ]),                   
                               ),
                               SizedBox(height: 10,),
+
+
                          Container(
                             padding: const EdgeInsets.all(14.0),
                                           width: width * 0.90,
@@ -570,8 +587,13 @@ Future<void> getOrderHandler() async{
                                 })),
                       ],
                     ),
-                                )
-                              
+                                ),
+                                                if(order?.isCancelled == 0)
+
+                      Padding(
+                           padding: const EdgeInsets.all(8.0),
+                           child: TimeLine(order: order,),
+                         ),         
                               
                       ],
                     ),

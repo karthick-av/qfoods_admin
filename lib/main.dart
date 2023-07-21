@@ -1,10 +1,12 @@
 import 'package:admin/Provider/DishesProvider.dart';
+import 'package:admin/Provider/OrdersProvider.dart';
 import 'package:admin/Provider/RestaurantsProvider.dart';
 import 'package:admin/Provider/CategoryProvider.dart';
 import 'package:admin/Provider/groceryProductsProvider.dart';
 import 'package:admin/constants/NotificationServices.dart';
 import 'package:admin/screen/CategoryScreen/CategoryScreen.dart';
 import 'package:admin/screen/CategoryScreen/ViewCategoryDishesScreen.dart';
+import 'package:admin/screen/CouponsScreen/CouponScreen.dart';
 import 'package:admin/screen/DeliveryPersonsScreen/DeliveryPersonsScreen.dart';
 import 'package:admin/screen/GroceryBrandsScreen/GroceryBrandsScreen.dart';
 import 'package:admin/screen/GroceryBrandsScreen/ViewGroceryBrandProductsScreen.dart';
@@ -75,6 +77,8 @@ NotificationService.initalize();
   ChangeNotifierProvider(create: ((context) => DishTagsProvider())),
   ChangeNotifierProvider(create: ((context) => SearchGroceryTagsProvider())),
   ChangeNotifierProvider(create: ((context) => GroceryOrdersProvider())),
+  ChangeNotifierProvider(create: ((context) => OrdersProvider())),
+  ChangeNotifierProvider(create: ((context) => CouponProvider())),
   
   
   

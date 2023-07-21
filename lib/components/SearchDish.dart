@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 
 
 
-void SearchDish(BuildContext context, Future<void> Function(List<CategoryDishesModel> dishes) additemHandler){
+void SearchDish(BuildContext context, Future<void> Function(List<CategoryDishesModel> dishes) additemHandler) async{
   double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 bool loading = false;
@@ -66,7 +66,7 @@ myState(() {
  }
   
   
-   showDialog(
+  await showDialog(
       context: context,
       builder: (BuildContext context) {
             return Dialog(
@@ -76,6 +76,9 @@ myState(() {
                   final SelectedProvider = Provider.of<SelectedCategoryProvider>(context, listen: true);
 final SelectedDishes = SelectedProvider.SelectedDishes;
  final dishes = SelectedProvider.dishes;
+
+
+print("ssssssssss ${SelectedDishes?.length}");
 
                   return Scaffold(
                     bottomNavigationBar: (SelectedDishes?.length ?? 0) > 0 ?

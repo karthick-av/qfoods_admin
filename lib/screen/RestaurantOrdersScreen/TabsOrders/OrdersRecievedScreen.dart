@@ -1,34 +1,31 @@
 import 'dart:convert';
 
+import 'package:admin/Provider/OrdersProvider.dart';
 import 'package:admin/components/FilterBottomSheet.dart';
+import 'package:admin/components/OrderCard.dart';
 import 'package:admin/constants/api_services.dart';
 import 'package:admin/constants/colors.dart';
 import 'package:admin/constants/font_family.dart';
-import 'package:admin/controller/OrdersController.dart';
-import 'package:admin/model/GroceryOrderModel.dart';
-import 'package:admin/navigation/DrawerNavigation.dart';
-import 'package:admin/screen/GroceryOrdersScreen/GroceryOrdersScreen.dart';
-import 'package:admin/screen/GroceryOrdersScreen/ViewGroceryOrderScreen.dart';
-import 'package:animate_do/animate_do.dart';
+import 'package:admin/model/OrderModel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-
-import 'package:http/http.dart' as http;
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 
-class GroceryOrdersCancelledScreen extends StatefulWidget {
-  const GroceryOrdersCancelledScreen({super.key});
+import 'package:http/http.dart' as http;
+
+
+class OrdersRecievedScreen extends StatefulWidget {
+  const OrdersRecievedScreen({super.key});
 
   @override
-  State<GroceryOrdersCancelledScreen> createState() => _GroceryOrdersCancelledScreenState();
+  State<OrdersRecievedScreen> createState() => _OrdersRecievedScreenState();
 }
 
-class _GroceryOrdersCancelledScreenState extends State<GroceryOrdersCancelledScreen> {
-
+class _OrdersRecievedScreenState extends State<OrdersRecievedScreen> {
+ 
  ScrollController scrollController = ScrollController();
 bool ApiCallDone = false;
 int current_page = 1;
@@ -36,14 +33,14 @@ bool CompleteAPI = false;
 int per_page = 10;
 bool loading = false;
 bool footer_loading = false;
-
 String filterCondition = "";
 void initState(){
   super.initState();
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    final orders = Provider.of<GroceryOrdersProvider>(context, listen: false);
-   if((orders?.cancelled?.length ?? 0) == 0 && orders?.lcancelled == false){
-      getOrdersHandler("init", "");
+     final detailProvider = Provider.of<OrdersProvider>(context, listen: false);
+ 
+   if((detailProvider?.received?.length ?? 0) == 0 && detailProvider?.lrecieved == false){
+      getDetailHandler("init", "");
   
    }
   });
@@ -56,7 +53,7 @@ void initState(){
       // }
         if(scrollController.position.maxScrollExtent == scrollController.offset){
        if(!ApiCallDone){
-       getOrdersHandler("bottom",filterCondition);
+       getDetailHandler("bottom",filterCondition);
   
         
        }
@@ -73,12 +70,12 @@ scrollController.dispose();
   super.dispose();
 }
 
-Future<void> getOrdersHandler(String type, String filter)async {
+Future<void> getDetailHandler(String type, String filter)async {
   if(CompleteAPI) return;
   
-    final orders = Provider.of<GroceryOrdersProvider>(context, listen: false);
-
-  List<GroceryOrderModel> __orders= [];
+ final orderProvider = Provider.of<OrdersProvider>(context, listen: false);
+ 
+  List<OrderModel> _list= [];
 
  if(type == "init"){
 setState(() {
@@ -96,10 +93,10 @@ setState(() {
     ApiCallDone = true;
   });
 try{
-       String url = "${ApiServices.grocery_get_orders}?isCancelled=true&page=${current_page}&per_page=${per_page}&${filter}";
+       String url = "${ApiServices.get_orders}?status=1&page=${current_page}&per_page=${per_page}&${filter}";
    print(url);
     var response = await http.get(Uri.parse(url));
-orders?.updatecancelled();
+orderProvider.updateRecieved();
           setState(() {
     ApiCallDone = false;
   });
@@ -126,17 +123,16 @@ setState(() {
        
        for(var json in response_body){
      
-      __orders.add(GroceryOrderModel.fromJson(json));
+      _list.add(OrderModel.fromJson(json));
        }
 
        setState(() {
     current_page = current_page + 1;
     });
-
       if(type == "init"){
-      orders.addAllCancelled(__orders);   
+      orderProvider.addAllReceived(_list);   
       }else{
-       orders.addCanelled(__orders);   
+       orderProvider.addReceived(_list);   
      
       }
 
@@ -167,15 +163,15 @@ void ResetState(){
 current_page = 1;
  CompleteAPI = false;
  
-filterCondition = "";
- 
+ filterCondition = "";
 setState(() {});
 }
 
 void filterHandler(String selectedDate, String fromDate, String toDate){
-    final orders = Provider.of<GroceryOrdersProvider>(context, listen: false);
+ final detailProvider = Provider.of<OrdersProvider>(context, listen: false);
+ 
   ResetState();
-  orders.addAllCancelled([]);
+  detailProvider.addAllReceived([]);
 
 String val = '';
 if(selectedDate != ""){
@@ -187,25 +183,25 @@ if(fromDate != "" && toDate != ""){
 }
 filterCondition = val;
 setState(() {});
-getOrdersHandler("init", val);
+getDetailHandler("init", val);
 }
 
- @override
+
+  @override
   Widget build(BuildContext context) {
      double height = MediaQuery.of(context).size.height;
         double width = MediaQuery.of(context).size.width;
-    final orders = Provider.of<GroceryOrdersProvider>(context, listen: true).cancelled;
-  
+  final list = Provider.of<OrdersProvider>(context, listen: true).received;
+ 
     return Scaffold(
       backgroundColor: AppColors.whitecolor,
-      
       body: SafeArea(
         child:  RefreshIndicator(
            color: AppColors.primaryColor,
                 onRefresh: ()async{
                   ResetState();
              
-                  await getOrdersHandler("init", "");
+                  await getDetailHandler("init", "");
                 
           },
           child:  Column(
@@ -228,7 +224,7 @@ getOrdersHandler("init", val);
                   controller: scrollController,
                   child: Column(
                     children: [
-                         if(loading)
+                          if(loading)
                                      LinearProgressIndicator(
                                       
                                       backgroundColor: AppColors.whitecolor,
@@ -245,57 +241,11 @@ getOrdersHandler("init", val);
                     ListView.builder(
                      physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: orders?.length ?? 0,
+                      itemCount: list?.length ?? 0,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       itemBuilder:(context, index) {
-                        var parsedDate = DateTime.parse(orders?[index]?.orderCreated ?? '');
-                      
-                final DateFormat formatter = DateFormat('MMM dd,yyyy hh:mm a');
-                final String formatted = formatter.format(parsedDate);
-                
-                      return InkWell(
-                        onTap: (){
-                               Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => 
-                     ViewGroceryOrderScreen(orderDetail: orders![index],)),
-                    );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 10),
-                           padding: const EdgeInsets.all(14.0),
-                           
-                                width: width * 0.90,
-                                           decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, 4),
-                                      blurRadius: 20,
-                                      color: const Color(0xFFB0CCE1).withOpacity(0.29),
-                                    ),
-                                  ],
-                                ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Order Id: ${orders?[index]?.orderId ?? ''}",style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14.0), fontWeight: FontWeight.w500)),
-                                  SizedBox(height: 5,),
-                                  Text("${formatted ?? ''}",style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(11.0), fontWeight: FontWeight.w400)),
-                               
-                                ],
-                              )
-                           
-                              ,Text("RS ${orders?[index]?.grandTotal ?? ''}",style: TextStyle(color: AppColors.blackcolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14.0), fontWeight: FontWeight.bold))
-                           
-                            ],
-                          ),
-                        ),
-                      );
+                       
+                      return OrderCard(order: list[index],);
                       
                     }),
                    
@@ -326,6 +276,5 @@ getOrdersHandler("init", val);
     );
   }
 }
-
 
 

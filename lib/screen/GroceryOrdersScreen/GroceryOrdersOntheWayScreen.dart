@@ -169,6 +169,7 @@ void ResetState(){
 current_page = 1;
  CompleteAPI = false;
  
+filterCondition = "";
 setState(() {});
 }
 
@@ -190,8 +191,7 @@ setState(() {});
 getOrdersHandler("init", val);
 }
 
-
-  @override
+ @override
   Widget build(BuildContext context) {
      double height = MediaQuery.of(context).size.height;
         double width = MediaQuery.of(context).size.width;
@@ -209,99 +209,118 @@ getOrdersHandler("init", val);
                   await getOrdersHandler("init", "");
                 
           },
-          child:  SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              children: [
-                   if(loading)
-                               LinearProgressIndicator(
-                                
-                                backgroundColor: AppColors.whitecolor,
-                                 valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),  
-                    minHeight: 10,
-                              ),
-               Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              width: double.infinity,
-                              height: 1,
-                              color: Color(0XFFe9e9eb),
-                             ),
+          child:  Column(
+            children: [
+                InkWell(
+          onTap: (){
+            FilterBottomSheet(context, filterHandler);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+             Icon(Icons.filter_alt_outlined, size: ScreenUtil().setSp(24), color: AppColors.blackcolor,)
+            , Text("filter", style: TextStyle(color: AppColors.blackcolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(17)),)
+               ,  SizedBox(width: 10,),
+            ],
+          ),
+        ),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    children: [
+                         if(loading)
+                                     LinearProgressIndicator(
+                                      
+                                      backgroundColor: AppColors.whitecolor,
+                                       valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),  
+                          minHeight: 10,
+                                    ),
+                     Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    width: double.infinity,
+                                    height: 1,
+                                    color: Color(0XFFe9e9eb),
+                                   ),
+                      
+                    ListView.builder(
+                     physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: orders?.length ?? 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      itemBuilder:(context, index) {
+                        var parsedDate = DateTime.parse(orders?[index]?.orderCreated ?? '');
+                      
+                final DateFormat formatter = DateFormat('MMM dd,yyyy hh:mm a');
+                final String formatted = formatter.format(parsedDate);
                 
-              ListView.builder(
-               physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: orders?.length ?? 0,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                itemBuilder:(context, index) {
-                  var parsedDate = DateTime.parse(orders?[index]?.orderCreated ?? '');
-        
-          final DateFormat formatter = DateFormat('MMM dd,yyyy hh:mm a');
-          final String formatted = formatter.format(parsedDate);
-          
-                return InkWell(
-                  onTap: (){
-                       Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => 
-               ViewGroceryOrderScreen(orderDetail: orders![index],)),
-              );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                     padding: const EdgeInsets.all(14.0),
-                     
-                          width: width * 0.90,
-                                     decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                offset: Offset(0, 4),
-                                blurRadius: 20,
-                                color: const Color(0xFFB0CCE1).withOpacity(0.29),
-                              ),
-                            ],
-                          ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Order Id: ${orders?[index]?.orderId ?? ''}",style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14.0), fontWeight: FontWeight.w500)),
-                            SizedBox(height: 5,),
-                            Text("${formatted ?? ''}",style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(11.0), fontWeight: FontWeight.w400)),
-                         
-                          ],
-                        )
-                     
-                        ,Text("RS ${orders?[index]?.grandTotal ?? ''}",style: TextStyle(color: AppColors.blackcolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14.0), fontWeight: FontWeight.bold))
-                     
-                      ],
-                    ),
-                  ),
-                );
-                
-              }),
-             
-                   if(footer_loading)
-                         Container(
+                      return InkWell(
+                        onTap: (){
+                               Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => 
+                     ViewGroceryOrderScreen(orderDetail: orders![index],)),
+                    );
+                        },
+                        child: Container(
                           margin: const EdgeInsets.only(top: 10),
-                          padding: const EdgeInsets.all(10),
+                           padding: const EdgeInsets.all(14.0),
+                           
+                                width: width * 0.90,
+                                           decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0, 4),
+                                      blurRadius: 20,
+                                      color: const Color(0xFFB0CCE1).withOpacity(0.29),
+                                    ),
+                                  ],
+                                ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(height: ScreenUtil().setSp(15), width: ScreenUtil().setSp(15),
-                              child: CircularProgressIndicator(strokeWidth: 1.0,color: AppColors.primaryColor,),
-                              ),
-                              SizedBox(width: 10,),
-                              Text("Load More", style: TextStyle(color: AppColors.primaryColor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(16)),)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Order Id: ${orders?[index]?.orderId ?? ''}",style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14.0), fontWeight: FontWeight.w500)),
+                                  SizedBox(height: 5,),
+                                  Text("${formatted ?? ''}",style: TextStyle(color: AppColors.pricecolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(11.0), fontWeight: FontWeight.w400)),
+                               
+                                ],
+                              )
+                           
+                              ,Text("RS ${orders?[index]?.grandTotal ?? ''}",style: TextStyle(color: AppColors.blackcolor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(14.0), fontWeight: FontWeight.bold))
+                           
                             ],
                           ),
-                         ),
-                         SizedBox(height: MediaQuery.of(context).size.height )
-              ],
-            ),
+                        ),
+                      );
+                      
+                    }),
+                   
+                         if(footer_loading)
+                               Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: ScreenUtil().setSp(15), width: ScreenUtil().setSp(15),
+                                    child: CircularProgressIndicator(strokeWidth: 1.0,color: AppColors.primaryColor,),
+                                    ),
+                                    SizedBox(width: 10,),
+                                    Text("Load More", style: TextStyle(color: AppColors.primaryColor, fontFamily: FONT_FAMILY, fontSize: ScreenUtil().setSp(16)),)
+                                  ],
+                                ),
+                               ),
+                               SizedBox(height: MediaQuery.of(context).size.height )
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
